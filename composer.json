@@ -1,0 +1,33 @@
+{
+    "name": "herrera-io/service-container",
+    "description": "A simple service container.",
+    "keywords": ["container", "dependency", "service"],
+    "homepage": "https://herrera-io.github.com/php-service-container",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Herrera",
+            "email": "kevin@herrera.io",
+            "homepage": "http://kevin.herrera.io"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/herrera-io/php-service-container/issues"
+    },
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Herrera\\Service": "src/lib"
+        }
+    },
+    "config": {
+        "vendor-dir": "src/vendors"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
