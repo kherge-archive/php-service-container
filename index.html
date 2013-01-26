@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Php-service-container by herrera-io</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Php-service-container</h1>
+        <p>A simple service container.</p>
+
+        <p class="view"><a href="https://github.com/herrera-io/php-service-container">View the Project on GitHub <small>herrera-io/php-service-container</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/herrera-io/php-service-container/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/herrera-io/php-service-container/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/herrera-io/php-service-container">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Service Container</h1>
+
+<p><a href="http://travis-ci.org/herrera-io/php-service-container"><img src="https://travis-ci.org/herrera-io/php-service-container.png" alt="Build Status"></a></p>
+
+<p>A simple service container.</p>
+
+<h2>Summary</h2>
+
+<p>This library provides a simple service container. It is heavily influenced by Fabien Potencier's <a href="https://github.com/fabpot/Pimple">Pimple</a> project (in particular, Igor Wielder's modifications). The differences from Pimple are</p>
+
+<ul>
+<li>naming convention</li>
+<li>handling of service provider registration and initialization</li>
+<li>library specific exceptions</li>
+<li>different implementations of <code>shared()</code> and <code>protect()</code>
+</li>
+</ul><h2>Installation</h2>
+
+<p>Add it to your list of Composer dependencies:</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>composer require herrera-io/service-container<span class="o">=</span>1.*
+</pre></div>
+
+<h2>Usage</h2>
+
+<h3>Simple usage</h3>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">use</span> <span class="nx">Herrera\Service\Container</span><span class="p">;</span>
+
+<span class="nv">$container</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Container</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'var'</span> <span class="o">=&gt;</span> <span class="mi">123</span><span class="p">));</span>
+
+<span class="nv">$container</span><span class="p">[</span><span class="s1">'factory'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="o">-&gt;</span><span class="na">many</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nx">ArrayObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'rand'</span> <span class="o">=&gt;</span> <span class="nx">rand</span><span class="p">()));</span>
+<span class="p">});</span>
+
+<span class="nv">$container</span><span class="p">[</span><span class="s1">'shared'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="o">-&gt;</span><span class="na">once</span><span class="p">(</span><span class="k">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nx">ArrayObject</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'rand'</span> <span class="o">=&gt;</span> <span class="nx">rand</span><span class="p">()));</span>
+<span class="p">});</span>
+
+<span class="k">echo</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'factory'</span><span class="p">][</span><span class="s1">'rand'</span><span class="p">];</span> <span class="c1">// echo "1197692050"</span>
+<span class="k">echo</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'factory'</span><span class="p">][</span><span class="s1">'rand'</span><span class="p">];</span> <span class="c1">// echo "995449132"</span>
+<span class="k">echo</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'shared'</span><span class="p">][</span><span class="s1">'rand'</span><span class="p">];</span> <span class="c1">// echo "89432412"</span>
+<span class="k">echo</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'shared'</span><span class="p">][</span><span class="s1">'rand'</span><span class="p">];</span> <span class="c1">// echo "89432412"</span>
+</pre></div>
+
+<h3>Service provider usage</h3>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">use</span> <span class="nx">Herrera\Service\Container</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Herrera\Service\InitializableInterface</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Herrera\Service\ProviderInterface</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">MyProvider</span> <span class="k">implements</span> <span class="nx">InitializableInterface</span><span class="p">,</span> <span class="nx">ProviderInterface</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">initialize</span><span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$container</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'session'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'user'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getUsername</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">register</span><span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$container</span><span class="p">[</span><span class="s1">'hello'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="o">-&gt;</span><span class="na">once</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">echo</span> <span class="s1">'Hello, '</span><span class="p">,</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="s2">"!</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nv">$container</span> <span class="o">=</span>  <span class="k">new</span> <span class="nx">Container</span><span class="p">();</span>
+<span class="nv">$container</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="k">new</span> <span class="nx">MyProvider</span><span class="p">());</span>
+
+</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/herrera-io">herrera-io</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
