@@ -73,7 +73,7 @@ class Container implements ArrayAccess
 
         $subject = $this->container[$name];
 
-        return function (self $container) use ($callable, $subject) {
+        return function (Container $container) use ($callable, $subject) {
             return $callable($container, $subject($container));
         };
     }
@@ -178,7 +178,7 @@ class Container implements ArrayAccess
      */
     public function once($callable)
     {
-        return function (self $container) use ($callable) {
+        return function (Container $container) use ($callable) {
             static $called = false;
             static $result;
 
