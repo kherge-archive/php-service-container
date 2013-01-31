@@ -11,7 +11,7 @@ Summary
 This library provides a simple service container. It is heavily influenced by Fabien Potencier's [Pimple](https://github.com/fabpot/Pimple) project (in particular, Igor Wielder's modifications). The differences from Pimple are
 
 - naming convention
-- handling of service provider registration and initialization
+- handling of service provider registration
 - library specific exceptions
 - different implementations of `shared()` and `protect()`
 
@@ -56,16 +56,10 @@ echo $container['shared']['rand']; // echo "89432412"
 <?php
 
 use Herrera\Service\Container;
-use Herrera\Service\InitializableInterface;
 use Herrera\Service\ProviderInterface;
 
-class MyProvider implements InitializableInterface, ProviderInterface
+class MyProvider implements ProviderInterface
 {
-    public function initialize(Container $container)
-    {
-        $container['name'] = $container['session']->get('user')->getUsername();
-    }
-
     public function register(Container $container)
     {
         $container['hello'] = $container->once(function (Container $container) {
@@ -75,6 +69,8 @@ class MyProvider implements InitializableInterface, ProviderInterface
 }
 
 $container =  new Container();
-$container->register(new MyProvider());
+$container->register(new MyProvider(), array(
+    'name' => 'Guest'
+));
 
 ```

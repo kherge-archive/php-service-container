@@ -5,7 +5,6 @@ namespace Herrera\Service;
 use ArrayAccess;
 use Closure;
 use Herrera\Service\Exception\ExtendException;
-use Herrera\Service\Exception\InitializedException;
 use Herrera\Service\Exception\OutOfBoundsException;
 
 /**
@@ -21,20 +20,6 @@ class Container implements ArrayAccess
      * @var array
      */
     private $container;
-
-    /**
-     * The initialized state of the service container.
-     *
-     * @var boolean
-     */
-    private $initialized = false;
-
-    /**
-     * The list of services to initialize.
-     *
-     * @var array
-     */
-    private $initializable = array();
 
     /**
      * Initializes the service container.
@@ -76,23 +61,6 @@ class Container implements ArrayAccess
         return function (Container $container) use ($callable, $subject) {
             return $callable($container, $subject($container));
         };
-    }
-
-    /**
-     * Initializes the registered service providers.
-     */
-    public function initialize()
-    {
-        if ($this->initialized) {
-            throw InitializedException::create();
-        }
-
-        foreach ($this->initializable as $provider) {
-            $provider->initialize($this);
-        }
-
-        $this->initialized = true;
-        $this->initializable = array();
     }
 
     /**
@@ -192,11 +160,9 @@ class Container implements ArrayAccess
     }
 
     /**
-     * Registers the service provider with the service container. If the service
-     * is initializable (implements the <code>InitializableInterface</code>), it
-     * will be initialized when <code>initialize()</code> is called. If any
-     * parameters are provided, they will recursively replace or add values to
-     * the service container.
+     * Registers the service provider with the service container. If any 
+     * parameters are provided, they will recursively replace or add values
+     * to the service container.
      *
      * @param ProviderInterface $provider   The service provider.
      * @param array             $parameters The list of parameters.
@@ -204,10 +170,6 @@ class Container implements ArrayAccess
     public function register(ProviderInterface $provider, array $parameters = null)
     {
         $provider->register($this);
-
-        if ($provider instanceof InitializableInterface) {
-            $this->initializable[] = $provider;
-        }
 
         if (null !== $parameters) {
             $this->container = array_replace_recursive(
