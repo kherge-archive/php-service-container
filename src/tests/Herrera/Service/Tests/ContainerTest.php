@@ -55,27 +55,6 @@ class ContainerTest extends TestCase
         $this->assertEquals($this->container['test'], $this->container['test']);
     }
 
-    public function testInitialized()
-    {
-        $this->container->initialize();
-
-        $this->setExpectedException(
-            'Herrera\\Service\\Exception\\InitializedException'
-        );
-
-        $this->container->initialize();
-    }
-
-    public function testInitialize()
-    {
-        $provider = new ServiceProvider();
-
-        $this->container->register($provider);
-        $this->container->initialize();
-
-        $this->assertSame($this->container, $provider->initialized);
-    }
-
     public function testMany()
     {
         $callable = function () {};
