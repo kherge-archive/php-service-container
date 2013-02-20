@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Php-service-container by herrera-io</title>
+    <title>Service Container by herrera-io</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -15,7 +15,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Php-service-container</h1>
+        <h1>Service Container</h1>
         <p>A simple service container.</p>
 
         <p class="view"><a href="https://github.com/herrera-io/php-service-container">View the Project on GitHub <small>herrera-io/php-service-container</small></a></p>
@@ -40,7 +40,7 @@
 
 <ul>
 <li>naming convention</li>
-<li>handling of service provider registration and initialization</li>
+<li>handling of service provider registration</li>
 <li>library specific exceptions</li>
 <li>different implementations of <code>shared()</code> and <code>protect()</code>
 </li>
@@ -80,16 +80,10 @@
 <div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
 
 <span class="k">use</span> <span class="nx">Herrera\Service\Container</span><span class="p">;</span>
-<span class="k">use</span> <span class="nx">Herrera\Service\InitializableInterface</span><span class="p">;</span>
 <span class="k">use</span> <span class="nx">Herrera\Service\ProviderInterface</span><span class="p">;</span>
 
-<span class="k">class</span> <span class="nc">MyProvider</span> <span class="k">implements</span> <span class="nx">InitializableInterface</span><span class="p">,</span> <span class="nx">ProviderInterface</span>
+<span class="k">class</span> <span class="nc">MyProvider</span> <span class="k">implements</span> <span class="nx">ProviderInterface</span>
 <span class="p">{</span>
-    <span class="k">public</span> <span class="k">function</span> <span class="nf">initialize</span><span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="nv">$container</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="p">[</span><span class="s1">'session'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'user'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getUsername</span><span class="p">();</span>
-    <span class="p">}</span>
-
     <span class="k">public</span> <span class="k">function</span> <span class="nf">register</span><span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="nv">$container</span><span class="p">[</span><span class="s1">'hello'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$container</span><span class="o">-&gt;</span><span class="na">once</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="nx">Container</span> <span class="nv">$container</span><span class="p">)</span> <span class="p">{</span>
@@ -99,7 +93,9 @@
 <span class="p">}</span>
 
 <span class="nv">$container</span> <span class="o">=</span>  <span class="k">new</span> <span class="nx">Container</span><span class="p">();</span>
-<span class="nv">$container</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="k">new</span> <span class="nx">MyProvider</span><span class="p">());</span>
+<span class="nv">$container</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="k">new</span> <span class="nx">MyProvider</span><span class="p">(),</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'Guest'</span>
+<span class="p">));</span>
 
 </pre></div>
       </section>
